@@ -1,0 +1,1250 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ELITE 90 — لوحة التحكم</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Cairo:wght@300;400;600;700;900&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #080808;
+    --surface: #0f0f0f;
+    --card: #111111;
+    --border: #1a1a1a;
+    --accent: #c8f135;
+    --accent2: #35f1c8;
+    --accent3: #f13580;
+    --text: #e8e8e8;
+    --muted: #555;
+    --glow: rgba(200,241,53,0.15);
+    --glow2: rgba(53,241,200,0.1);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Cairo', sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* grain overlay */
+  body::before {
+    content: '';
+    position: fixed; inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events: none; z-index: 0; opacity: 0.4;
+  }
+
+  /* HEADER */
+  header {
+    position: relative; z-index: 10;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 20px 40px;
+    border-bottom: 1px solid var(--border);
+    background: linear-gradient(180deg, rgba(200,241,53,0.03) 0%, transparent 100%);
+  }
+
+  .logo {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 2rem;
+    letter-spacing: 4px;
+    color: var(--accent);
+    text-shadow: 0 0 30px rgba(200,241,53,0.5);
+  }
+
+  .logo span { color: var(--text); }
+
+  .header-right {
+    display: flex; align-items: center; gap: 20px;
+  }
+
+  .day-badge {
+    background: var(--accent);
+    color: #000;
+    font-weight: 900;
+    font-size: 0.75rem;
+    padding: 6px 14px;
+    border-radius: 2px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+  }
+
+  .player-switch {
+    display: flex; gap: 4px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 4px;
+  }
+
+  .player-btn {
+    padding: 6px 16px;
+    border: none; cursor: pointer;
+    border-radius: 2px;
+    font-family: 'Cairo', sans-serif;
+    font-size: 0.8rem; font-weight: 700;
+    transition: all 0.2s;
+    background: transparent; color: var(--muted);
+  }
+
+  .player-btn.active {
+    background: var(--accent); color: #000;
+  }
+
+  /* HERO STATS */
+  .hero-stats {
+    position: relative; z-index: 5;
+    display: grid; grid-template-columns: repeat(4, 1fr);
+    gap: 1px;
+    background: var(--border);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .stat-box {
+    background: var(--bg);
+    padding: 28px 32px;
+    position: relative; overflow: hidden;
+    transition: background 0.3s;
+  }
+
+  .stat-box:hover { background: #0d0d0d; }
+
+  .stat-box::after {
+    content: '';
+    position: absolute; bottom: 0; right: 0;
+    width: 60px; height: 60px;
+    background: radial-gradient(circle, var(--glow) 0%, transparent 70%);
+  }
+
+  .stat-label {
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 3px;
+    color: var(--muted);
+    margin-bottom: 8px;
+  }
+
+  .stat-value {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 3rem;
+    color: var(--accent);
+    line-height: 1;
+    text-shadow: 0 0 20px rgba(200,241,53,0.3);
+  }
+
+  .stat-sub {
+    font-size: 0.75rem;
+    color: var(--muted);
+    margin-top: 4px;
+  }
+
+  /* PROGRESS BAR */
+  .progress-strip {
+    position: relative; z-index: 5;
+    padding: 16px 40px;
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; gap: 20px;
+  }
+
+  .progress-label {
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 3px;
+    color: var(--muted);
+    white-space: nowrap;
+  }
+
+  .progress-track {
+    flex: 1; height: 4px;
+    background: var(--border);
+    border-radius: 2px; overflow: hidden;
+  }
+
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent2), var(--accent));
+    border-radius: 2px;
+    transition: width 1s ease;
+    box-shadow: 0 0 10px rgba(200,241,53,0.4);
+  }
+
+  .progress-pct {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.2rem;
+    color: var(--accent);
+  }
+
+  /* MAIN LAYOUT */
+  .main {
+    position: relative; z-index: 5;
+    display: grid;
+    grid-template-columns: 280px 1fr 300px;
+    gap: 0;
+    min-height: calc(100vh - 200px);
+  }
+
+  /* SIDEBAR */
+  .sidebar {
+    border-left: 1px solid var(--border);
+    padding: 30px 0;
+  }
+
+  .sidebar-section {
+    padding: 0 24px 24px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 24px;
+  }
+
+  .sidebar-title {
+    font-size: 0.65rem;
+    text-transform: uppercase;
+    letter-spacing: 4px;
+    color: var(--muted);
+    margin-bottom: 16px;
+  }
+
+  /* WEEK NAV */
+  .week-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 4px;
+  }
+
+  .day-cell {
+    aspect-ratio: 1;
+    border: 1px solid var(--border);
+    border-radius: 3px;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-size: 0.6rem;
+    color: var(--muted);
+    position: relative;
+  }
+
+  .day-cell:hover { border-color: var(--accent); color: var(--accent); }
+
+  .day-cell.active {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: #000;
+    font-weight: 900;
+  }
+
+  .day-cell.free {
+    border-color: rgba(200,241,53,0.3);
+  }
+
+  .day-cell.rest { opacity: 0.4; }
+
+  .day-cell .day-num {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1rem;
+    line-height: 1;
+  }
+
+  /* PHASE INDICATOR */
+  .phase-list { display: flex; flex-direction: column; gap: 8px; }
+
+  .phase-item {
+    display: flex; align-items: center; gap: 12px;
+    padding: 10px 12px;
+    border-radius: 3px;
+    border: 1px solid var(--border);
+    cursor: pointer;
+    transition: all 0.2s;
+    position: relative; overflow: hidden;
+  }
+
+  .phase-item.active {
+    border-color: var(--accent);
+    background: rgba(200,241,53,0.05);
+  }
+
+  .phase-dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  .phase-item:nth-child(1) .phase-dot { background: var(--accent2); }
+  .phase-item:nth-child(2) .phase-dot { background: var(--accent); }
+  .phase-item:nth-child(3) .phase-dot { background: var(--accent3); }
+
+  .phase-name { font-size: 0.8rem; font-weight: 700; flex: 1; }
+  .phase-weeks { font-size: 0.7rem; color: var(--muted); }
+
+  /* MAIN CONTENT */
+  .content {
+    border-right: 1px solid var(--border);
+    border-left: 1px solid var(--border);
+    padding: 30px;
+  }
+
+  .content-header {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 30px;
+  }
+
+  .current-day-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 3rem;
+    line-height: 1;
+    letter-spacing: 2px;
+  }
+
+  .day-type-tag {
+    display: inline-block;
+    padding: 4px 12px;
+    border-radius: 2px;
+    font-size: 0.65rem;
+    text-transform: uppercase;
+    letter-spacing: 3px;
+    font-weight: 700;
+    margin-top: 6px;
+  }
+
+  .tag-muscle { background: rgba(200,241,53,0.15); color: var(--accent); border: 1px solid rgba(200,241,53,0.3); }
+  .tag-tech { background: rgba(53,241,200,0.15); color: var(--accent2); border: 1px solid rgba(53,241,200,0.3); }
+  .tag-rest { background: rgba(255,255,255,0.05); color: var(--muted); border: 1px solid var(--border); }
+
+  .add-task-btn {
+    background: var(--accent);
+    color: #000;
+    border: none; cursor: pointer;
+    padding: 10px 22px;
+    font-family: 'Cairo', sans-serif;
+    font-weight: 900; font-size: 0.85rem;
+    border-radius: 2px;
+    letter-spacing: 1px;
+    transition: all 0.2s;
+    display: flex; align-items: center; gap: 8px;
+  }
+
+  .add-task-btn:hover {
+    background: #d4f740;
+    box-shadow: 0 0 20px rgba(200,241,53,0.4);
+    transform: translateY(-1px);
+  }
+
+  /* TASKS */
+  .tasks-list { display: flex; flex-direction: column; gap: 10px; }
+
+  .task-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 18px 20px;
+    display: flex; align-items: center; gap: 16px;
+    transition: all 0.2s;
+    cursor: pointer;
+    position: relative; overflow: hidden;
+  }
+
+  .task-card::before {
+    content: '';
+    position: absolute; right: 0; top: 0; bottom: 0;
+    width: 3px;
+  }
+
+  .task-card.muscle::before { background: var(--accent); }
+  .task-card.tech::before { background: var(--accent2); }
+  .task-card.nutrition::before { background: var(--accent3); }
+
+  .task-card:hover {
+    border-color: #2a2a2a;
+    background: #131313;
+    transform: translateX(-2px);
+  }
+
+  .task-check {
+    width: 22px; height: 22px;
+    border: 2px solid var(--border);
+    border-radius: 3px;
+    flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+    transition: all 0.2s;
+    cursor: pointer;
+  }
+
+  .task-card.done .task-check {
+    background: var(--accent);
+    border-color: var(--accent);
+  }
+
+  .task-card.done .task-check::after {
+    content: '✓';
+    color: #000;
+    font-size: 0.75rem;
+    font-weight: 900;
+  }
+
+  .task-card.done .task-text { opacity: 0.4; text-decoration: line-through; }
+
+  .task-info { flex: 1; }
+
+  .task-text {
+    font-size: 0.9rem;
+    font-weight: 600;
+    margin-bottom: 4px;
+    transition: opacity 0.2s;
+  }
+
+  .task-meta {
+    font-size: 0.7rem;
+    color: var(--muted);
+    display: flex; gap: 12px;
+  }
+
+  .task-meta span { display: flex; align-items: center; gap: 4px; }
+
+  .task-category {
+    font-size: 0.65rem;
+    padding: 3px 10px;
+    border-radius: 2px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+
+  .cat-muscle { background: rgba(200,241,53,0.1); color: var(--accent); }
+  .cat-tech { background: rgba(53,241,200,0.1); color: var(--accent2); }
+  .cat-nutrition { background: rgba(241,53,128,0.1); color: var(--accent3); }
+
+  /* SECTION DIVIDER */
+  .section-divider {
+    display: flex; align-items: center; gap: 12px;
+    margin: 24px 0 14px;
+  }
+
+  .section-divider-line { flex: 1; height: 1px; background: var(--border); }
+
+  .section-divider-label {
+    font-size: 0.65rem;
+    text-transform: uppercase;
+    letter-spacing: 3px;
+    color: var(--muted);
+  }
+
+  /* RIGHT PANEL */
+  .right-panel {
+    padding: 30px 24px;
+  }
+
+  .rp-section { margin-bottom: 30px; }
+  .rp-title {
+    font-size: 0.65rem;
+    text-transform: uppercase;
+    letter-spacing: 4px;
+    color: var(--muted);
+    margin-bottom: 16px;
+  }
+
+  /* NUTRITION CARD */
+  .nutrition-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 16px;
+    margin-bottom: 8px;
+  }
+
+  .nutrition-name { font-size: 0.8rem; font-weight: 700; margin-bottom: 8px; }
+
+  .nutrition-bar-track {
+    height: 4px; background: var(--border);
+    border-radius: 2px; overflow: hidden; margin-bottom: 6px;
+  }
+
+  .nutrition-bar-fill {
+    height: 100%; border-radius: 2px;
+    transition: width 1s ease;
+  }
+
+  .bar-protein { background: var(--accent3); }
+  .bar-calories { background: var(--accent); }
+  .bar-water { background: var(--accent2); }
+
+  .nutrition-nums {
+    display: flex; justify-content: space-between;
+    font-size: 0.7rem; color: var(--muted);
+  }
+
+  /* WEEKLY OVERVIEW */
+  .week-overview {
+    display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px;
+  }
+
+  .wo-day {
+    text-align: center;
+    padding: 8px 4px;
+    border-radius: 3px;
+    border: 1px solid var(--border);
+    font-size: 0.6rem;
+  }
+
+  .wo-day-name { color: var(--muted); margin-bottom: 6px; }
+
+  .wo-dot {
+    width: 8px; height: 8px; border-radius: 50%;
+    margin: 0 auto;
+  }
+
+  .wo-muscle { background: var(--accent); }
+  .wo-tech { background: var(--accent2); }
+  .wo-rest { background: var(--border); }
+  .wo-today { border-color: var(--accent); background: rgba(200,241,53,0.05); }
+
+  /* PARTNER CARD */
+  .partner-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 16px;
+    display: flex; align-items: center; gap: 14px;
+  }
+
+  .partner-avatar {
+    width: 44px; height: 44px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--accent2), var(--accent));
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 900; font-size: 1rem; color: #000;
+    flex-shrink: 0;
+  }
+
+  .partner-name { font-size: 0.85rem; font-weight: 700; }
+  .partner-status { font-size: 0.7rem; color: var(--muted); margin-top: 2px; }
+
+  .partner-online {
+    margin-right: auto;
+    width: 8px; height: 8px; border-radius: 50%;
+    background: #4caf50;
+    box-shadow: 0 0 6px rgba(76,175,80,0.6);
+  }
+
+  /* MODAL */
+  .modal-overlay {
+    display: none;
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,0.85);
+    z-index: 1000;
+    align-items: center; justify-content: center;
+    backdrop-filter: blur(4px);
+  }
+
+  .modal-overlay.show { display: flex; }
+
+  .modal {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 32px;
+    width: 480px;
+    max-width: 90vw;
+    position: relative;
+    box-shadow: 0 0 60px rgba(0,0,0,0.8), 0 0 30px rgba(200,241,53,0.05);
+  }
+
+  .modal-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.8rem;
+    letter-spacing: 2px;
+    margin-bottom: 24px;
+    color: var(--accent);
+  }
+
+  .modal-close {
+    position: absolute; top: 16px; left: 16px;
+    background: none; border: 1px solid var(--border);
+    color: var(--muted); cursor: pointer;
+    width: 32px; height: 32px; border-radius: 2px;
+    font-size: 1rem; display: flex; align-items: center; justify-content: center;
+    transition: all 0.2s;
+  }
+
+  .modal-close:hover { border-color: var(--accent3); color: var(--accent3); }
+
+  .form-group { margin-bottom: 18px; }
+
+  .form-label {
+    display: block; font-size: 0.7rem;
+    text-transform: uppercase; letter-spacing: 2px;
+    color: var(--muted); margin-bottom: 8px;
+  }
+
+  .form-input, .form-select, .form-textarea {
+    width: 100%;
+    background: var(--card);
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 10px 14px;
+    border-radius: 3px;
+    font-family: 'Cairo', sans-serif;
+    font-size: 0.9rem;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+
+  .form-input:focus, .form-select:focus, .form-textarea:focus {
+    border-color: var(--accent);
+  }
+
+  .form-select option { background: var(--surface); }
+  .form-textarea { resize: vertical; min-height: 80px; }
+
+  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+
+  .submit-btn {
+    width: 100%;
+    background: var(--accent); color: #000;
+    border: none; cursor: pointer;
+    padding: 14px;
+    font-family: 'Cairo', sans-serif;
+    font-weight: 900; font-size: 0.95rem;
+    border-radius: 3px;
+    transition: all 0.2s;
+    letter-spacing: 1px;
+    margin-top: 8px;
+  }
+
+  .submit-btn:hover {
+    background: #d4f740;
+    box-shadow: 0 0 30px rgba(200,241,53,0.3);
+  }
+
+  /* NOTIFICATIONS */
+  .notif {
+    position: fixed; bottom: 30px; left: 30px;
+    background: var(--card);
+    border: 1px solid var(--accent);
+    color: var(--text);
+    padding: 14px 20px;
+    border-radius: 4px;
+    font-size: 0.85rem;
+    z-index: 2000;
+    transform: translateY(100px);
+    opacity: 0;
+    transition: all 0.3s;
+    box-shadow: 0 0 20px rgba(200,241,53,0.2);
+  }
+
+  .notif.show { transform: translateY(0); opacity: 1; }
+
+  /* GLOW LINE */
+  .glow-line {
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--accent), transparent);
+    margin: 0;
+    opacity: 0.4;
+  }
+
+  /* SCROLLBAR */
+  ::-webkit-scrollbar { width: 4px; }
+  ::-webkit-scrollbar-track { background: var(--bg); }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+  ::-webkit-scrollbar-thumb:hover { background: var(--accent); }
+
+  /* ANIMATIONS */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(12px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes pulse-glow {
+    0%, 100% { box-shadow: 0 0 10px rgba(200,241,53,0.3); }
+    50% { box-shadow: 0 0 25px rgba(200,241,53,0.6); }
+  }
+
+  .task-card { animation: fadeUp 0.3s ease both; }
+  .task-card:nth-child(1) { animation-delay: 0.05s; }
+  .task-card:nth-child(2) { animation-delay: 0.1s; }
+  .task-card:nth-child(3) { animation-delay: 0.15s; }
+  .task-card:nth-child(4) { animation-delay: 0.2s; }
+  .task-card:nth-child(5) { animation-delay: 0.25s; }
+
+  .day-badge { animation: pulse-glow 2s infinite; }
+
+  /* EMPTY STATE */
+  .empty-state {
+    text-align: center; padding: 60px 20px;
+    color: var(--muted);
+  }
+
+  .empty-icon { font-size: 3rem; margin-bottom: 12px; opacity: 0.3; }
+  .empty-text { font-size: 0.85rem; }
+
+  /* responsive */
+  @media (max-width: 900px) {
+    .main { grid-template-columns: 1fr; }
+    .sidebar, .right-panel { border: none; border-top: 1px solid var(--border); }
+    header { padding: 16px 20px; }
+    .hero-stats { grid-template-columns: repeat(2, 1fr); }
+    .progress-strip { padding: 12px 20px; }
+    .content { padding: 20px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header>
+  <div class="logo">ELITE<span>90</span></div>
+  <div class="header-right">
+    <div id="currentDayBadge" class="day-badge">اليوم 1</div>
+    <div class="player-switch">
+      <button class="player-btn active" onclick="switchPlayer('player1')">أنا</button>
+      <button class="player-btn" onclick="switchPlayer('player2')">خويي</button>
+    </div>
+  </div>
+</header>
+
+<div class="glow-line"></div>
+
+<!-- HERO STATS -->
+<div class="hero-stats">
+  <div class="stat-box">
+    <div class="stat-label">المرحلة الحالية</div>
+    <div class="stat-value" id="phaseNum">01</div>
+    <div class="stat-sub">بناء الأساس — أسابيع 1-4</div>
+  </div>
+  <div class="stat-box">
+    <div class="stat-label">المهام المنجزة</div>
+    <div class="stat-value" id="completedCount">0</div>
+    <div class="stat-sub" id="totalCount">من 0 مهمة اليوم</div>
+  </div>
+  <div class="stat-box">
+    <div class="stat-label">الأيام المتبقية</div>
+    <div class="stat-value" id="daysLeft">90</div>
+    <div class="stat-sub">من رحلة الـ 90 يوم</div>
+  </div>
+  <div class="stat-box">
+    <div class="stat-label">معدل الإنجاز</div>
+    <div class="stat-value" id="successRate">0%</div>
+    <div class="stat-sub">متوسط هذا الأسبوع</div>
+  </div>
+</div>
+
+<!-- PROGRESS BAR -->
+<div class="progress-strip">
+  <div class="progress-label">التقدم الكلي</div>
+  <div class="progress-track">
+    <div class="progress-fill" id="progressFill" style="width: 1%"></div>
+  </div>
+  <div class="progress-pct" id="progressPct">1%</div>
+</div>
+
+<!-- MAIN -->
+<div class="main">
+
+  <!-- SIDEBAR -->
+  <div class="sidebar">
+    <div class="sidebar-section">
+      <div class="sidebar-title">أيام الأسبوع</div>
+      <div class="week-grid" id="weekGrid"></div>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-title">المراحل الثلاث</div>
+      <div class="phase-list">
+        <div class="phase-item active" onclick="selectPhase(1)">
+          <div class="phase-dot"></div>
+          <div>
+            <div class="phase-name">المرحلة الأولى</div>
+            <div class="phase-weeks">أسابيع 1-4 | أساس</div>
+          </div>
+        </div>
+        <div class="phase-item" onclick="selectPhase(2)">
+          <div class="phase-dot"></div>
+          <div>
+            <div class="phase-name">المرحلة الثانية</div>
+            <div class="phase-weeks">أسابيع 5-8 | شدة</div>
+          </div>
+        </div>
+        <div class="phase-item" onclick="selectPhase(3)">
+          <div class="phase-dot"></div>
+          <div>
+            <div class="phase-name">المرحلة الثالثة</div>
+            <div class="phase-weeks">أسابيع 9-12 | احتراف</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-title">الشريك</div>
+      <div class="partner-card">
+        <div class="partner-avatar">خ</div>
+        <div>
+          <div class="partner-name">خويك</div>
+          <div class="partner-status">90 يوم معاً 🔥</div>
+        </div>
+        <div class="partner-online"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CONTENT -->
+  <div class="content">
+    <div class="content-header">
+      <div>
+        <div class="current-day-title" id="dayTitle">الأحد</div>
+        <div class="day-type-tag tag-tech" id="dayTypeTag">تقنية + لياقة</div>
+      </div>
+      <button class="add-task-btn" onclick="openModal()">
+        <span>+</span> إضافة مهمة
+      </button>
+    </div>
+
+    <div id="tasksContainer" class="tasks-list"></div>
+  </div>
+
+  <!-- RIGHT PANEL -->
+  <div class="right-panel">
+
+    <div class="rp-section">
+      <div class="rp-title">نظرة الأسبوع</div>
+      <div class="week-overview" id="weekOverview"></div>
+    </div>
+
+    <div class="rp-section">
+      <div class="rp-title">التغذية اليومية</div>
+
+      <div class="nutrition-card">
+        <div class="nutrition-name">🔥 السعرات (الهدف: 2800)</div>
+        <div class="nutrition-bar-track">
+          <div class="nutrition-bar-fill bar-calories" id="calBar" style="width:0%"></div>
+        </div>
+        <div class="nutrition-nums">
+          <span id="calVal">0</span>
+          <span>2800 سعرة</span>
+        </div>
+      </div>
+
+      <div class="nutrition-card">
+        <div class="nutrition-name">💪 البروتين (الهدف: 140g)</div>
+        <div class="nutrition-bar-track">
+          <div class="nutrition-bar-fill bar-protein" id="proBar" style="width:0%"></div>
+        </div>
+        <div class="nutrition-nums">
+          <span id="proVal">0g</span>
+          <span>140g</span>
+        </div>
+      </div>
+
+      <div class="nutrition-card">
+        <div class="nutrition-name">💧 الماء (الهدف: 3L)</div>
+        <div class="nutrition-bar-track">
+          <div class="nutrition-bar-fill bar-water" id="watBar" style="width:0%"></div>
+        </div>
+        <div class="nutrition-nums">
+          <span id="watVal">0L</span>
+          <span>3L</span>
+        </div>
+      </div>
+
+      <div style="display:flex; gap:8px; margin-top:10px;">
+        <button onclick="logNutrition('cal')" style="flex:1; background:var(--card); border:1px solid var(--border); color:var(--text); padding:8px; border-radius:3px; cursor:pointer; font-family:Cairo,sans-serif; font-size:0.75rem;">+ سعرات</button>
+        <button onclick="logNutrition('pro')" style="flex:1; background:var(--card); border:1px solid var(--border); color:var(--text); padding:8px; border-radius:3px; cursor:pointer; font-family:Cairo,sans-serif; font-size:0.75rem;">+ بروتين</button>
+        <button onclick="logNutrition('wat')" style="flex:1; background:var(--card); border:1px solid var(--border); color:var(--text); padding:8px; border-radius:3px; cursor:pointer; font-family:Cairo,sans-serif; font-size:0.75rem;">+ ماء</button>
+      </div>
+    </div>
+
+    <div class="rp-section">
+      <div class="rp-title">إحصائيات سريعة</div>
+      <div style="display:flex; flex-direction:column; gap:8px;">
+        <div style="display:flex; justify-content:space-between; padding:10px 12px; background:var(--card); border:1px solid var(--border); border-radius:3px; font-size:0.8rem;">
+          <span style="color:var(--muted);">الطول</span><span style="color:var(--accent); font-weight:700;">170 cm</span>
+        </div>
+        <div style="display:flex; justify-content:space-between; padding:10px 12px; background:var(--card); border:1px solid var(--border); border-radius:3px; font-size:0.8rem;">
+          <span style="color:var(--muted);">الوزن الحالي</span><span style="color:var(--accent); font-weight:700;">54 kg</span>
+        </div>
+        <div style="display:flex; justify-content:space-between; padding:10px 12px; background:var(--card); border:1px solid var(--border); border-radius:3px; font-size:0.8rem;">
+          <span style="color:var(--muted);">الهدف</span><span style="color:var(--accent2); font-weight:700;">لاعب احترافي 🎯</span>
+        </div>
+        <div style="display:flex; justify-content:space-between; padding:10px 12px; background:var(--card); border:1px solid var(--border); border-radius:3px; font-size:0.8rem;">
+          <span style="color:var(--muted);">المحتوى</span><span style="color:var(--accent3); font-weight:700;">1v1 ضد العالم 🌍</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL -->
+<div class="modal-overlay" id="modalOverlay" onclick="closeModalOutside(event)">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal()">✕</button>
+    <div class="modal-title">إضافة مهمة جديدة</div>
+
+    <div class="form-group">
+      <label class="form-label">اسم المهمة</label>
+      <input class="form-input" id="taskName" placeholder="مثال: سكوات 4×15..." />
+    </div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">النوع</label>
+        <select class="form-select" id="taskType">
+          <option value="muscle">💪 عضل وقوة</option>
+          <option value="tech">⚽ تقنية كرة قدم</option>
+          <option value="nutrition">🥗 تغذية</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">اليوم</label>
+        <select class="form-select" id="taskDay">
+          <option value="الأحد">الأحد</option>
+          <option value="الاثنين">الاثنين</option>
+          <option value="الثلاثاء">الثلاثاء</option>
+          <option value="الأربعاء">الأربعاء</option>
+          <option value="الخميس">الخميس</option>
+          <option value="الجمعة">الجمعة</option>
+          <option value="السبت">السبت</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">المدة</label>
+        <input class="form-input" id="taskDuration" placeholder="مثال: 20 دقيقة" />
+      </div>
+      <div class="form-group">
+        <label class="form-label">الشريك</label>
+        <select class="form-select" id="taskPlayer">
+          <option value="player1">أنا</option>
+          <option value="player2">خويي</option>
+          <option value="both">كلانا</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">ملاحظات (اختياري)</label>
+      <textarea class="form-textarea" id="taskNotes" placeholder="تفاصيل إضافية..."></textarea>
+    </div>
+
+    <button class="submit-btn" onclick="addTask()">إضافة المهمة ✓</button>
+  </div>
+</div>
+
+<!-- NOTIFICATION -->
+<div class="notif" id="notif"></div>
+
+<script>
+// ====== STATE ======
+let currentPlayer = 'player1';
+let currentDay = 'الأحد';
+let dayNumber = 1;
+let tasks = JSON.parse(localStorage.getItem('elite90_tasks') || '[]');
+let nutrition = JSON.parse(localStorage.getItem('elite90_nutrition') || '{"cal":0,"pro":0,"wat":0}');
+
+const days = ['الأحد','الاثنين','الثلاثاء','الأربعاء','الخميس','الجمعة','السبت'];
+const dayTypes = {
+  'الأحد': { type: 'tech', label: 'تقنية + لياقة', tagClass: 'tag-tech' },
+  'الاثنين': { type: 'rest', label: 'راحة', tagClass: 'tag-rest' },
+  'الثلاثاء': { type: 'rest', label: 'راحة', tagClass: 'tag-rest' },
+  'الأربعاء': { type: 'rest', label: 'راحة', tagClass: 'tag-rest' },
+  'الخميس': { type: 'muscle', label: 'عضل + قوة', tagClass: 'tag-muscle' },
+  'الجمعة': { type: 'muscle', label: 'عضل + قوة', tagClass: 'tag-muscle' },
+  'السبت': { type: 'tech', label: 'تقنية + تصوير 1v1', tagClass: 'tag-tech' },
+};
+
+// Default tasks per day
+const defaultTasks = {
+  'الأحد': [
+    { name: 'إحماء ركض خفيف', type: 'tech', duration: '10 دقائق', notes: 'ركض بطيء لتدفئة العضلات' },
+    { name: 'مراوغة بالكونات', type: 'tech', duration: '15 دقيقة', notes: 'تمرين السلم + الكونات' },
+    { name: 'تمرير وتسلّم بالحائط', type: 'tech', duration: '15 دقيقة', notes: 'دقة التمرير بكلا القدمين' },
+    { name: 'ضربات على الهدف', type: 'tech', duration: '10 دقائق', notes: 'تنوع بين السلفة والاستقبال' },
+    { name: 'مهارات فردية', type: 'tech', duration: '20 دقيقة', notes: 'تحضير محتوى 1v1' },
+  ],
+  'الخميس': [
+    { name: 'سكوات — 4×15', type: 'muscle', duration: '15 دقيقة', notes: 'مسافة 90 درجة، ركبتك ما تتجاوز إصبع قدمك' },
+    { name: 'بوش أب عريض — 4×12', type: 'muscle', duration: '12 دقيقة', notes: 'للصدر والكتف' },
+    { name: 'بوش أب ضيق — 3×10', type: 'muscle', duration: '10 دقيقة', notes: 'ترايسبس، اليدين قريبتين' },
+    { name: 'لانجز — 3×12', type: 'muscle', duration: '10 دقيقة', notes: 'خطوة واسعة، كل رجل' },
+    { name: 'هيب ثرست — 4×15', type: 'muscle', duration: '10 دقيقة', notes: 'تقوية الأرداف والأرجل' },
+    { name: 'بلانك — 3×45 ثانية', type: 'muscle', duration: '8 دقائق', notes: 'الكور والثبات' },
+  ],
+  'الجمعة': [
+    { name: 'بوش أب — 5×15', type: 'muscle', duration: '15 دقيقة', notes: 'تصاعدي بالشدة' },
+    { name: 'سكوات قفز — 4×10', type: 'muscle', duration: '12 دقيقة', notes: 'للانفجارية والسرعة' },
+    { name: 'برنبي — 3×8', type: 'muscle', duration: '10 دقيقة', notes: 'لياقة وقوة' },
+    { name: 'تمرين البطن — 4×20', type: 'muscle', duration: '10 دقيقة', notes: 'كرنش + ليغ ريز' },
+    { name: 'ديبس على الكرسي — 3×12', type: 'muscle', duration: '8 دقيقة', notes: 'ترايسبس' },
+  ],
+  'السبت': [
+    { name: 'إحماء شامل', type: 'tech', duration: '10 دقائق', notes: '' },
+    { name: '1v1 مع خويك — تصوير', type: 'tech', duration: '30 دقيقة', notes: 'صوّر كل شوط بكاميرا ثابتة' },
+    { name: 'مراجعة الفيديو + تحليل', type: 'tech', duration: '15 دقيقة', notes: 'شوف أخطاءك والنقاط الجيدة' },
+    { name: 'مهارة جديدة للتدريب', type: 'tech', duration: '20 دقيقة', notes: 'اختار مهارة وكررها' },
+  ],
+};
+
+// ====== INIT ======
+function init() {
+  const today = new Date().getDay();
+  const dayNames = ['الأحد','الاثنين','الثلاثاء','الأربعاء','الخميس','الجمعة','السبت'];
+  currentDay = dayNames[today];
+
+  buildWeekGrid();
+  buildWeekOverview();
+  updateDayView();
+  updateStats();
+  updateNutritionBars();
+}
+
+function buildWeekGrid() {
+  const grid = document.getElementById('weekGrid');
+  const today = new Date().getDay();
+  const freedays = [0,4,5,6];
+  grid.innerHTML = '';
+
+  days.forEach((d, i) => {
+    const cell = document.createElement('div');
+    cell.className = 'day-cell';
+    if (i === today) cell.classList.add('active');
+    else if (freedays.includes(i)) cell.classList.add('free');
+    else cell.classList.add('rest');
+    cell.innerHTML = `<div class="day-num">${i+1}</div><div>${d.slice(0,2)}</div>`;
+    cell.onclick = () => selectDay(d, i);
+    grid.appendChild(cell);
+  });
+}
+
+function buildWeekOverview() {
+  const ov = document.getElementById('weekOverview');
+  const today = new Date().getDay();
+  ov.innerHTML = '';
+  days.forEach((d, i) => {
+    const dt = dayTypes[d];
+    const isToday = i === today;
+    const div = document.createElement('div');
+    div.className = 'wo-day' + (isToday ? ' wo-today' : '');
+    const dotClass = dt.type === 'muscle' ? 'wo-muscle' : dt.type === 'tech' ? 'wo-tech' : 'wo-rest';
+    div.innerHTML = `<div class="wo-day-name">${d.slice(0,2)}</div><div class="wo-dot ${dotClass}"></div>`;
+    ov.appendChild(div);
+  });
+}
+
+function selectDay(day, idx) {
+  currentDay = day;
+  document.querySelectorAll('.day-cell').forEach((c,i) => {
+    c.classList.remove('active');
+    if(i === idx) c.classList.add('active');
+  });
+  updateDayView();
+}
+
+function updateDayView() {
+  const dt = dayTypes[currentDay];
+  document.getElementById('dayTitle').textContent = currentDay;
+  const tag = document.getElementById('dayTypeTag');
+  tag.textContent = dt.label;
+  tag.className = 'day-type-tag ' + dt.tagClass;
+  renderTasks();
+  updateStats();
+}
+
+function renderTasks() {
+  const container = document.getElementById('tasksContainer');
+  const dayTasks = getTasksForDay(currentDay);
+
+  if (!dayTasks.length) {
+    if (dayTypes[currentDay].type === 'rest') {
+      container.innerHTML = `<div class="empty-state"><div class="empty-icon">😴</div><div class="empty-text">يوم راحة — استرح وجهّز جسمك للغد</div></div>`;
+    } else {
+      container.innerHTML = `<div class="empty-state"><div class="empty-icon">📋</div><div class="empty-text">ما في مهام بعد — ضغط "إضافة مهمة" لتبدأ</div></div>`;
+    }
+    return;
+  }
+
+  container.innerHTML = '';
+
+  // Group by type
+  const grouped = { muscle: [], tech: [], nutrition: [] };
+  dayTasks.forEach(t => {
+    if (grouped[t.type]) grouped[t.type].push(t);
+    else grouped.tech.push(t);
+  });
+
+  const labels = { muscle: '💪 تمرين العضل', tech: '⚽ تقنية كرة القدم', nutrition: '🥗 التغذية' };
+
+  Object.entries(grouped).forEach(([type, list]) => {
+    if (!list.length) return;
+    const div = document.createElement('div');
+    div.className = 'section-divider';
+    div.innerHTML = `<div class="section-divider-line"></div><div class="section-divider-label">${labels[type]}</div><div class="section-divider-line"></div>`;
+    container.appendChild(div);
+
+    list.forEach(task => {
+      const card = document.createElement('div');
+      card.className = `task-card ${task.type} ${task.done ? 'done' : ''}`;
+      card.innerHTML = `
+        <div class="task-check" onclick="toggleTask('${task.id}')"></div>
+        <div class="task-info">
+          <div class="task-text">${task.name}</div>
+          <div class="task-meta">
+            ${task.duration ? `<span>⏱ ${task.duration}</span>` : ''}
+            ${task.notes ? `<span>📝 ${task.notes.slice(0,40)}${task.notes.length>40?'...':''}</span>` : ''}
+          </div>
+        </div>
+        <div class="task-category cat-${task.type}">${type === 'muscle' ? 'عضل' : type === 'tech' ? 'تقنية' : 'تغذية'}</div>
+      `;
+      container.appendChild(card);
+    });
+  });
+}
+
+function getTasksForDay(day) {
+  // Merge defaults + user tasks for this day and player
+  const defaults = (defaultTasks[day] || []).map((t, i) => ({
+    id: `default_${day}_${i}`,
+    day, player: 'both', done: false, ...t,
+    ...tasks.find(ut => ut.id === `default_${day}_${i}`) || {}
+  }));
+
+  const userTasks = tasks.filter(t =>
+    t.day === day &&
+    !t.id.startsWith('default_') &&
+    (t.player === currentPlayer || t.player === 'both')
+  );
+
+  return [...defaults, ...userTasks];
+}
+
+function toggleTask(id) {
+  const all = getAllMergedTasks();
+  const existing = tasks.find(t => t.id === id);
+
+  if (existing) {
+    existing.done = !existing.done;
+  } else {
+    tasks.push({ id, done: true });
+  }
+
+  save();
+  renderTasks();
+  updateStats();
+}
+
+function getAllMergedTasks() {
+  return days.flatMap(d => getTasksForDay(d));
+}
+
+function updateStats() {
+  const todayTasks = getTasksForDay(currentDay);
+  const done = todayTasks.filter(t => t.done).length;
+  const total = todayTasks.length;
+
+  document.getElementById('completedCount').textContent = done;
+  document.getElementById('totalCount').textContent = `من ${total} مهمة اليوم`;
+
+  const rate = total > 0 ? Math.round((done / total) * 100) : 0;
+  document.getElementById('successRate').textContent = rate + '%';
+
+  // progress (day number based)
+  const pct = Math.max(1, Math.round((dayNumber / 90) * 100));
+  document.getElementById('progressFill').style.width = pct + '%';
+  document.getElementById('progressPct').textContent = pct + '%';
+  document.getElementById('daysLeft').textContent = 90 - dayNumber + 1;
+}
+
+function updateNutritionBars() {
+  const n = nutrition;
+  document.getElementById('calBar').style.width = Math.min(100, (n.cal/2800)*100) + '%';
+  document.getElementById('proBar').style.width = Math.min(100, (n.pro/140)*100) + '%';
+  document.getElementById('watBar').style.width = Math.min(100, (n.wat/3)*100) + '%';
+  document.getElementById('calVal').textContent = n.cal;
+  document.getElementById('proVal').textContent = n.pro + 'g';
+  document.getElementById('watVal').textContent = n.wat + 'L';
+}
+
+function logNutrition(type) {
+  const amounts = { cal: 300, pro: 25, wat: 0.5 };
+  const labels = { cal: '+300 سعرة', pro: '+25g بروتين', wat: '+0.5L ماء' };
+  nutrition[type] = +(nutrition[type] + amounts[type]).toFixed(1);
+  saveNutrition();
+  updateNutritionBars();
+  showNotif(labels[type] + ' ✓');
+}
+
+// ====== MODAL ======
+function openModal() {
+  document.getElementById('modalOverlay').classList.add('show');
+  document.getElementById('taskDay').value = currentDay;
+}
+
+function closeModal() {
+  document.getElementById('modalOverlay').classList.remove('show');
+}
+
+function closeModalOutside(e) {
+  if (e.target === document.getElementById('modalOverlay')) closeModal();
+}
+
+function addTask() {
+  const name = document.getElementById('taskName').value.trim();
+  if (!name) { showNotif('❌ اكتب اسم المهمة أولاً'); return; }
+
+  const task = {
+    id: 'task_' + Date.now(),
+    name,
+    type: document.getElementById('taskType').value,
+    day: document.getElementById('taskDay').value,
+    duration: document.getElementById('taskDuration').value,
+    player: document.getElementById('taskPlayer').value,
+    notes: document.getElementById('taskNotes').value,
+    done: false,
+  };
+
+  tasks.push(task);
+  save();
+  closeModal();
+  updateDayView();
+  showNotif('✓ تمت إضافة المهمة!');
+
+  // Clear form
+  ['taskName','taskDuration','taskNotes'].forEach(id => document.getElementById(id).value = '');
+}
+
+function switchPlayer(p) {
+  currentPlayer = p;
+  document.querySelectorAll('.player-btn').forEach((b, i) => {
+    b.classList.toggle('active', (i===0 && p==='player1') || (i===1 && p==='player2'));
+  });
+  renderTasks();
+  updateStats();
+}
+
+function selectPhase(n) {
+  document.querySelectorAll('.phase-item').forEach((el, i) => {
+    el.classList.toggle('active', i+1 === n);
+  });
+  const phases = ['01','02','03'];
+  const labels = ['بناء الأساس — أسابيع 1-4', 'رفع الشدة — أسابيع 5-8', 'الاحتراف — أسابيع 9-12'];
+  document.getElementById('phaseNum').textContent = phases[n-1];
+  document.querySelector('.stat-box:first-child .stat-sub').textContent = labels[n-1];
+}
+
+function showNotif(msg) {
+  const el = document.getElementById('notif');
+  el.textContent = msg;
+  el.classList.add('show');
+  setTimeout(() => el.classList.remove('show'), 2500);
+}
+
+function save() { localStorage.setItem('elite90_tasks', JSON.stringify(tasks)); }
+function saveNutrition() { localStorage.setItem('elite90_nutrition', JSON.stringify(nutrition)); }
+
+// ====== KICK OFF ======
+init();
+</script>
+</body>
+</html>
